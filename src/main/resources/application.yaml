@@ -1,3 +1,8 @@
 spring:
   application:
     name: FileConvertor
+
+app: 
+  file:
+    conversion: 
+      baseDir: /home/bipin-koirala/Bipin Koirala/My Programs/temp/
