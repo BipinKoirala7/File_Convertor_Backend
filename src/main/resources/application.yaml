@@ -4,5 +4,6 @@ spring:
 
 app: 
   file:
-    conversion: 
+    convertor: 
       baseDir: /home/bipin-koirala/Bipin Koirala/My Programs/temp/
+      max-size: 50
