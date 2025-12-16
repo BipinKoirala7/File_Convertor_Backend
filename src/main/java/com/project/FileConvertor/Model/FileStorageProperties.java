@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @ConfigurationProperties("app.file.convertor")
-public class FileConverterProperties {
+public class FileStorageProperties {
 
     // We can add other properties as needed in the porject
 
