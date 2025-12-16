@@ -15,8 +15,8 @@ public class FileStorageProperties {
     // We can add other properties as needed in the porject
 
     // Base directory of the folder where file is stored.
-    private String baseDir;
+    private final String baseDir;
 
     // Max Size of a file that can be stored.
-    private Long maxSize;
+    private final Long maxSize;
 }
