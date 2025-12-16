@@ -20,11 +20,11 @@ public class Conversion {
     @NotNull(message = "Conversion Id cannot be null")
     private UUID id;
 
-    @NotNull(message = "Original File Name cannot be null")
-    private String originalFileName;
+    private UUID fileId;
 
-    @NotNull(message = "Extension Type cannot be null")
-    private String extensionType;
+    private String targetFileType;
+
+    
 
     private FileConversionStatus status;
 }

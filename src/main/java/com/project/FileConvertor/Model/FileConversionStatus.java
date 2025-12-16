@@ -1,8 +1,9 @@
 package com.project.FileConvertor.Model;
 
 public enum FileConversionStatus {
-    NOTSTARTED,
+    PENDING,
     UPLOADING,
     PROCESSING,
-    FINISHED
+    COMPLETED,
+    FAILED
 }
