@@ -9,11 +9,14 @@ public class File {
     @NotNull(message = "Conversion Id cannot be null")
     private UUID id;
 
+    @NotNull(message = "User Id cannot be null")
+    private UUID userdId;
+
     @NotNull(message = "Original File Name cannot be null")
     private String originalFileName;
 
-    @Max(value = 50, message = "File cannot be larger than 50MB")
-    private Integer size;
+    @Max(value = 52428800, message = "File cannot be larger than 50MB")
+    private Long size;
 
     @NotNull(message = "Extension Type cannot be null")
     private String extensionType;
