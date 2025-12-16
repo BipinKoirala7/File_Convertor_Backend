@@ -1,5 +1,7 @@
 package com.project.FileConvertor.Model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -20,11 +22,19 @@ public class Conversion {
     @NotNull(message = "Conversion Id cannot be null")
     private UUID id;
 
-    private UUID fileId;
+    @NotNull(message = "Source file Id cannot be null")
+    private UUID sourceFileId;
 
+    private UUID outputFileId;
+
+    @NotNull(message = "Target file type should be declared")
     private String targetFileType;
 
-    
+    private Duration duration;
 
+    @NotNull(message = "Time when the conversion started cannot be null")
+    private LocalDateTime localDateTime;
+
+    @NotNull(message = "File conversion status cannot be null")
     private FileConversionStatus status;
 }
