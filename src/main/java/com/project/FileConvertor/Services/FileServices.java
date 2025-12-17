@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileServices {
 
+    private final LibreOfficeConvertor convertor;
     private final FileStorageProperties fileStorageProperties;
     
     public void convertFile(MultipartFile file){
@@ -27,9 +28,12 @@ public class FileServices {
             // throw new Error for file being more than allowed maximum size
         }
 
-        // Save the file
-        saveFile(file);
-        
+        try{
+            convertor.convertDocxToPdf(file.getInputStream(), file.getOriginalFilename());
+        } catch (IOException e){
+            throw new RuntimeException(e.getMessage());
+        }
+
     }
 
     public void saveFile(MultipartFile file){

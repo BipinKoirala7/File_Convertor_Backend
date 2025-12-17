@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +27,10 @@ public class LibreOfficeConvertor {
     @Value("${conversion.timeout:120}")
     private int timeoutSeconds;
 
-    public byte[] convertDocxToPdf(InputStream docxInputStream, String originalFileName){
-        Path rootFile = Paths.get(fileStorageProperties.getBaseDir());
-        Path inputFile = rootFile.resolve(originalFileName);
-        Path outputFile = rootFile.resolve(originalFileName.replace(".docx", ".pdf"));
+    public byte[] convertDocxToPdf(InputStream docxInputStream, String originalFileName) throws IOException{
+        Path tempDir = Files.createTempDirectory(fileStorageProperties.getBaseDir());
+        Path inputFile = tempDir.resolve(originalFileName);
+        Path outputFile = tempDir.resolve(originalFileName.replace(".docx", ".pdf"));
 
         try{
             Files.copy(docxInputStream, inputFile);
@@ -42,11 +41,11 @@ public class LibreOfficeConvertor {
                 "--convert-to", 
                 "pdf", 
                 "--outdir", 
-                rootFile.toString(), 
+                tempDir.toString(), 
                 inputFile.toString()
             );
 
-            processBuilder.environment().put("HOME", rootFile.toString());
+            processBuilder.environment().put("HOME", tempDir.toString());
             processBuilder.redirectErrorStream(true);
 
             Process process = processBuilder.start();
@@ -81,7 +80,7 @@ public class LibreOfficeConvertor {
             throw new RuntimeException("Conversion failed", e);
         }finally {
             // Clean up temporary files
-            cleanupTempFiles(rootFile, inputFile, outputFile);
+            cleanupTempFiles(tempDir, inputFile, outputFile);
         }
     }
 
