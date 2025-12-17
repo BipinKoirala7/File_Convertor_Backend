@@ -1,6 +1,8 @@
 package com.project.FileConvertor.Controller;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.FileConvertor.DTOs.Response.RestApiSuccessResponse;
 import com.project.FileConvertor.Services.FileServices;
 import com.project.FileConvertor.Services.LibreOfficeConvertor;
 
@@ -34,15 +35,16 @@ public class FileController {
     }
 
     @PostMapping("convert")
-    public ResponseEntity<RestApiSuccessResponse<byte[]>> convertFile(@RequestParam MultipartFile file){
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(
-                RestApiSuccessResponse
-                .<byte[]>builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("File successfully converted")
-                .data(fileServices.convertFile(file))
-                .build());
+    public ResponseEntity<?> convertFile(@RequestParam MultipartFile file) {
+
+        byte[] pdfBytes = fileServices.convertFile(file);
+
+        String originalFilename = file.getOriginalFilename();
+        String pdfFilename = originalFilename.replaceAll("(?i)\\\\.docx$", ".pdf");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", pdfFilename);
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 }
