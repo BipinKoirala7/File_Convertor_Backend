@@ -1,9 +1,12 @@
 spring:
   application:
     name: FileConvertor
+  servlet:
+    multipart:
+      max-file-size: 5MB
 
 app: 
   file:
     convertor: 
-      baseDir: /home/bipin-koirala/Bipin Koirala/My Programs/temp/
-      max-size: 50
+      baseDir: /tmp/FileConvertor
+      max-size: 52428800000

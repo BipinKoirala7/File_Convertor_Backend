@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,8 @@ import com.project.FileConvertor.Services.LibreOfficeConvertor;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
-@RestController
+@RestController(value = "files")
+@ResponseBody
 @RequiredArgsConstructor
 public class FileController {
 
@@ -31,7 +33,7 @@ public class FileController {
         }
     }
 
-    @PostMapping("/convert")
+    @PostMapping("convert")
     public ResponseEntity<RestApiSuccessResponse<byte[]>> convertFile(@RequestParam MultipartFile file){
         return ResponseEntity
             .status(HttpStatus.OK)

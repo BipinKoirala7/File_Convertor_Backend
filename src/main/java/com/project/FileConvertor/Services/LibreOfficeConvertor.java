@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -20,30 +21,29 @@ import lombok.RequiredArgsConstructor;
 public class LibreOfficeConvertor {
 
     private final FileStorageProperties fileStorageProperties;
-    
+
     @Value("${libreoffice.path:/usr/bin/soffice}")
     private String libreOfficePath;
 
     @Value("${conversion.timeout:120}")
     private int timeoutSeconds;
 
-    public byte[] convertDocxToPdf(InputStream docxInputStream, String originalFileName) throws IOException{
-        Path tempDir = Files.createTempDirectory(fileStorageProperties.getBaseDir());
+    public byte[] convertDocxToPdf(InputStream docxInputStream, String originalFileName) throws IOException {
+        Path tempDir = Files.createTempDirectory(Paths.get(fileStorageProperties.getBaseDir()), "file-conversion");
         Path inputFile = tempDir.resolve(originalFileName);
         Path outputFile = tempDir.resolve(originalFileName.replace(".docx", ".pdf"));
 
-        try{
+        try {
             Files.copy(docxInputStream, inputFile);
 
             ProcessBuilder processBuilder = new ProcessBuilder(
-                libreOfficePath,
-                "--headless", 
-                "--convert-to", 
-                "pdf", 
-                "--outdir", 
-                tempDir.toString(), 
-                inputFile.toString()
-            );
+                    libreOfficePath,
+                    "--headless",
+                    "--convert-to",
+                    "pdf",
+                    "--outdir",
+                    tempDir.toString(),
+                    inputFile.toString());
 
             processBuilder.environment().put("HOME", tempDir.toString());
             processBuilder.redirectErrorStream(true);
@@ -51,22 +51,22 @@ public class LibreOfficeConvertor {
             Process process = processBuilder.start();
 
             StringBuilder output = new StringBuilder();
-            try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
-                while((line = reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     output.append(line).append("\n");
                 }
             }
 
             boolean finished = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
 
-            if(!finished){
+            if (!finished) {
                 process.destroyForcibly();
                 throw new IOException("Convertion timeout after " + timeoutSeconds + " seconds");
             }
             if (process.exitValue() != 0) {
-                throw new IOException("Conversion failed with exit code " + 
-                    process.exitValue() + "\nOutput: " + output);
+                throw new IOException("Conversion failed with exit code " +
+                        process.exitValue() + "\nOutput: " + output);
             }
 
             // Check if PDF was created
@@ -76,9 +76,11 @@ public class LibreOfficeConvertor {
 
             // Read PDF bytes
             return Files.readAllBytes(outputFile);
+        } catch (IOException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Conversion failed", e);
-        }finally {
+        } finally {
             // Clean up temporary files
             cleanupTempFiles(tempDir, inputFile, outputFile);
         }
