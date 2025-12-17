@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.project.FileConvertor.DTOs.Response.RestApiErrorResponse;
 import com.project.FileConvertor.Services.FileServices;
+import com.project.FileConvertor.Services.LibreOfficeConvertor;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -17,6 +19,17 @@ import lombok.RequiredArgsConstructor;
 public class FileController {
 
     private final FileServices fileServices;
+    private final LibreOfficeConvertor libreOfficeConvertor;
+
+    @PostConstruct
+    public void init() {
+        if (!libreOfficeConvertor.isLibreOfficeAvailable()) {
+            System.err.println("WARNING: LibreOffice is not available! Conversions will fail.");
+            System.err.println("Please install LibreOffice and configure the path in application.properties");
+        } else {
+            System.out.println("LibreOffice detected and ready for conversions");
+        }
+    }
 
     @PostMapping("/convert")
     public ResponseEntity<RestApiErrorResponse> convertFile(@RequestParam MultipartFile file){
